@@ -1,5 +1,7 @@
 import json
-
+"""
+Marten Hoogeveen
+"""
 
 def reference_taxonomy():
     jsondict = {}
