@@ -1,4 +1,21 @@
 #!/usr/bin/python
+"""
+Simple-LCA   V1.0    martenhoogeveen@naturalis.nl
+This script finds the lowest common ancestor of multiple BLAST hits is a simple way.
+For every query only a top percentage is used for finding the lca. These top hits are determined by the top hits
+bitscore treshold. The blast hits need to have a bitscore higher then the treshold percentage of the hit with the
+highest bitscore. So in other words, if the highest bitscore is 200 and your treshold is 8% only hits with a
+bitscore higher then 184 are used. The other tresholds are identity and coverage. This script finds the lca of the
+the BLAST hits that passes all tree tresholds. There is no specific order of checking the tresholds, they are all
+checked at the same time. There is also an option to not find the lca but output a species level identification if
+the best hit passes the tophit tresholds. So if the best blast hit is above the top hit tresholds it will be determined
+with a species name in the output. If it is lower then the top hit tresholds the highest possible taxon in genus.
+The hits can also be filtered by taxonomy, this option in introduced because of wrong determinations. Sequences can be
+from the species 'environmental sample' or 'uncultered sample'. The filter hits (-fh) parameter is a comma
+separated parameter. If the string in the parameter occurs in the taxonomy column the hit will be removed and not used
+in later steps. The filter lca hits (-flh) parameter is a comma separated parameter if the parameter occurs in a taxon
+rank it will be ignored while finding the lca.
+"""
 import argparse
 
 parser = argparse.ArgumentParser(description='')
@@ -19,7 +36,7 @@ parser.add_argument('-tid', metavar='top_hit_identity', dest='topid', type=str,
 parser.add_argument('-tcov', metavar='top_hit_coverage', dest='topcoverage', type=str,
 			help='query coverage treshold for the tophit', required=False,  default='100')
 parser.add_argument('-fh', metavar='filter hits', dest='filterHitsParam', type=str,
-			help='filter out hit that contain unwanted taxonomy', required=False, default="",nargs='?')
+			help='filter out hits that contain unwanted taxonomy', required=False, default="",nargs='?')
 parser.add_argument('-flh', metavar='filter lca hits', dest='filterLcaHits', type=str,
 			help='do not use a String in de lca determination', required=False, default="",nargs='?')
 args = parser.parse_args()
@@ -158,8 +175,7 @@ def write_header():
 def lca():
     """
     This method loops trough the BLAST output and all the hits per otu will be the input for the get_lca method.
-    The first line starts with "Query ID", this is the header so it will not be used. Every line is stored in the
-    otuLines variable.
+    Every hit is stored in the otuLines variable.
     """
     write_header()
     lastLineCount = linecount()
@@ -171,7 +187,8 @@ def lca():
                 if num == lastLineCount:
                     otuList.append(line.split("\t")[0])
                     otuLines.append(line.split("\t"))
-                determine_taxonomy(otuLines)#find the lca for the query
+                # find the lca for the query
+                determine_taxonomy(otuLines)
                 otuList = []
                 otuLines = []
                 otuList.append(line.split("\t")[0])
