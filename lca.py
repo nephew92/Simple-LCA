@@ -58,7 +58,6 @@ def remove_taxon(zippedTaxonomy):
 
 def check_best_hit(otu):
     if float(otu[0][4]) >= float(args.topid) and float(otu[0][5]) >= float(args.topcoverage):
-        print str(float(otu[0][4]))
         taxonomy = map(str.strip, otu[0][-1].split("/"))
         return otu[0][0] + "\tspecies\t" + taxonomy[-1] + "\t" + "\t".join(taxonomy) + "\tbest hit\n"
     else:
@@ -168,19 +167,18 @@ def lca():
         otuList = []
         otuLines = []
         for num, line in enumerate(input):
-            if line.split("\t")[0].strip() != "Query ID":
-                if line.split("\t")[0] not in otuList and num != 1 or num == lastLineCount:
-                    if num == lastLineCount:
-                        otuList.append(line.split("\t")[0])
-                        otuLines.append(line.split("\t"))
-                    determine_taxonomy(otuLines)#find the lca for the query
-                    otuList = []
-                    otuLines = []
+            if line.split("\t")[0] not in otuList and num != 0 or num == lastLineCount:
+                if num == lastLineCount:
                     otuList.append(line.split("\t")[0])
                     otuLines.append(line.split("\t"))
-                else:
-                    otuList.append(line.split("\t")[0])
-                    otuLines.append(line.split("\t"))
+                determine_taxonomy(otuLines)#find the lca for the query
+                otuList = []
+                otuLines = []
+                otuList.append(line.split("\t")[0])
+                otuLines.append(line.split("\t"))
+            else:
+                otuList.append(line.split("\t")[0])
+                otuLines.append(line.split("\t"))
 
 def main():
     lca()
