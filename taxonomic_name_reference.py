@@ -8,7 +8,10 @@ import json, argparse
 # Retrieve the commandline arguments
 parser = argparse.ArgumentParser(description='Create a taxonomic reference json file')
 parser.add_argument('-i', '--input', metavar='rankedlineage.dmp file', dest='rankedlineage', type=str,help='rankedlineage.dmp inputfile', required=True)
+parser.add_argument('-m', '--merged_input', metavar='merged.dmp file', dest='merged', type=str,help='merged.dmp inputfile', required=True)
 parser.add_argument('-o', '--output', metavar='json taxonomy file', dest='output', type=str, help='json file with taxonomy and taxonids', required=False, nargs='?', default="taxonomy_reference.json")
+parser.add_argument('-mo', '--merged_output', metavar='json merged file', dest='merged_output', type=str, help='json file with merged taxonids', required=False, nargs='?', default="merged_taxonomy.json")
+
 args = parser.parse_args()
 
 def reference_taxonomy():
@@ -29,8 +32,18 @@ def reference_taxonomy():
     with open(args.output, 'a') as tr:
         json.dump(jsondict, tr)
 
+def merged_taxonomy():
+    jsondict = {}
+    with open(args.merged) as merged:
+        for taxid in merged:
+            a = map(str.strip, taxid.split("|"))
+            jsondict[a[0]]=a[1]
+    with open(args.merged_output, 'a') as tr:
+        json.dump(jsondict, tr)
+
 def main():
     reference_taxonomy()
+    merged_taxonomy()
 
 if __name__ == "__main__":
     main()
