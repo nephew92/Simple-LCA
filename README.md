@@ -8,7 +8,7 @@ Clone this repository
 ```
 git clone https://github.com/naturalis/Simple-LCA
 ```
-### Acquire NCBI taxonomy files
+### Download NCBI taxonomy files
 This script makes use of the new_taxdump files from the NCBI ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/
 ```
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.zip
