@@ -38,7 +38,7 @@ parser.add_argument('-tcov', metavar='top_hit_coverage', dest='topcoverage', typ
 parser.add_argument('-fh', metavar='filter hits', dest='filterHitsParam', type=str,
 			help='filter out hits that contain unwanted taxonomy', required=False, default="",nargs='?')
 parser.add_argument('-flh', metavar='filter lca hits', dest='filterLcaHits', type=str,
-			help='do not use a String in de lca determination', required=False, default="",nargs='?')
+			help='ignore this in de lca determination', required=False, default="",nargs='?')
 args = parser.parse_args()
 
 def filter_check(filterParam, line):
@@ -75,7 +75,7 @@ def remove_taxon(zippedTaxonomy):
 
 def check_best_hit(otu):
     if float(otu[0][4]) >= float(args.topid) and float(otu[0][5]) >= float(args.topcoverage):
-        taxonomy = map(str.strip, otu[0][-1].split("/"))
+        taxonomy = map(str.strip, otu[0][-1].split(" / "))
         return otu[0][0] + "\tspecies\t" + taxonomy[-1] + "\t" + "\t".join(taxonomy) + "\tbest hit\n"
     else:
         return False
@@ -100,12 +100,25 @@ def zip_taxonomy_column(otu, topTreshold):
 def find_lca(zippedTaxonomy):
     count = 0
     taxonomy = []
+    if zippedTaxonomy:
+        zippedTaxonomy[-1] = "no identification"
     for y in zippedTaxonomy:
         if len(set(y)) > 1:
             break
         count += 1
         taxonomy.append(list(set(y))[0])
-    return taxonomy
+    t = True
+    newTaxonomy = []
+    for rev in reversed(taxonomy):
+        if rev == "no identification" and t:
+            pass
+        else:
+            t = False
+            newTaxonomy.append(rev)
+
+
+    print list(reversed(newTaxonomy))
+    return list(reversed(newTaxonomy))
 
 def generate_output_line(taxonomy, otu):
     taxonLevels = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
