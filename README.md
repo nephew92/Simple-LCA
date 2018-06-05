@@ -15,7 +15,7 @@ wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.zip
 ```
 ## Usage
 ### Quick start
-The scripts use a specific BLAST output, below the BLAST command
+The script uses a specific BLAST output, below the BLAST command
 ```
 blastn -query [input] -out [output] -db nt -max_target_seqs 100 -outfmt '6 qseqid stitle sacc staxids pident qcovs evalue bitscore'
 ```
