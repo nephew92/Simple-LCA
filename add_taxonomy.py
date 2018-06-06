@@ -40,7 +40,6 @@ def reference_taxonomy():
 def check_merged_taxonomy(taxid, mergedTaxonDict):
     try:
         a = mergedTaxonDict[taxid]
-        print taxid
         return a
     except:
         return taxid

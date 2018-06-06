@@ -115,9 +115,6 @@ def find_lca(zippedTaxonomy):
         else:
             t = False
             newTaxonomy.append(rev)
-
-
-    print list(reversed(newTaxonomy))
     return list(reversed(newTaxonomy))
 
 def generate_output_line(taxonomy, otu):
