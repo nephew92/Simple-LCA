@@ -10,7 +10,10 @@ parser.add_argument('-i', '--blast_input', metavar='BLAST custom outfmt 6 output
 parser.add_argument('-t', '--taxonomy_reference', metavar='taxonomy reference', dest='rankedlineage', type=str, help='reference json taxonomy file', required=False, nargs='?', default="taxonomy_reference.json")
 parser.add_argument('-m', '--merged', metavar='merged taxonids', dest='merged', type=str, help='merged taxon id json', required=False, nargs='?', default="merged_taxonomy.json")
 parser.add_argument('-o', '--output', metavar='output', dest='output', type=str, help='output file, BLAST hits with taxonomy', required=False, nargs='?', default="")
+parser.add_argument('-c', '--cross_acc_taxon', metavar='cross_acc_taxon', dest='cross_acc_taxon', type=str, help='cross reference between acc number and taxid', required=False, nargs='?', default="")
 args = parser.parse_args()
+
+cross_acc_taxon = json.load(open(args.cross_acc_taxon))
 
 def merged_taxonomy():
     mergedDict = {}
@@ -45,10 +48,24 @@ def check_merged_taxonomy(taxid, mergedTaxonDict):
         return taxid
 
 def add_taxonomy(taxonomyDict, mergedTaxonDict):
+    if not cross_acc_taxon:
+        print 'invalid cross_acc_taxon file'
+        return
+
     outputFile = args.output if args.output else "added_taxonomy_"+str(os.path.basename(args.blastinput))
     with open(args.blastinput) as blasthits, open(outputFile, "a") as output:
         for hit in blasthits:
-            taxid = hit.split("\t")[3]
+            acc = hit.split("\t")[1]
+            taxids = cross_acc_taxon.get(acc)
+            
+            taxid = "N/A"
+            
+            if taxids and len(taxids) > 0:
+                taxid = taxids[0]
+                print 'found taxid',taxid,'for acc',acc
+            else:
+                print 'missing taxid for acc',acc,'in',taxids
+
             if taxid == "N/A":
                 output.write(hit.strip()+"\t"+"unknown kingdom / unknown phylum / unknown class / unknown order / family / genus / species\n")
             else:
